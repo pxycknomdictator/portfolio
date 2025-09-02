@@ -52,11 +52,6 @@ export class TokenService {
 		const accessToken = this.generateAccessToken(payload._id);
 		const refreshToken = this.generateRefreshToken(payload);
 
-		if (!accessToken || !refreshToken) {
-			logger.warn("Failed to generate tokens");
-			return { accessToken: null, refreshToken: null };
-		}
-
 		return { accessToken, refreshToken };
 	}
 

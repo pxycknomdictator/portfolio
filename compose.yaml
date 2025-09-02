@@ -1,0 +1,10 @@
+services:
+    mongo:
+        container_name: mongo
+        image: mongo:latest
+        ports:
+            - "27017:27017"
+        environment:
+            MONGO_INITDB_DATABASE: portfolio
+            MONGO_INITDB_ROOT_USERNAME: cat
+            MONGO_INITDB_ROOT_PASSWORD: meow

@@ -1,0 +1,10 @@
+node_modules
+.vscode
+dist
+output
+.env
+.env.example
+README.md
+.svelte-kit
+compose.yaml
+Dockerfile

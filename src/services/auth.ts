@@ -2,25 +2,41 @@ import { Admin } from "$models/admin";
 import { logger } from "$lib/winston";
 import { PasswordService, TokenService } from "$services/security";
 
+interface AuthServerResponse {
+	success: true;
+	message: string;
+	accessToken: string;
+	refreshToken: string;
+	admin: { _id: string; name: string; email: string };
+}
+
+interface AuthErrorResponse {
+	success: false;
+	message: string;
+}
+
 export class AuthService {
 	private readonly adminModel: typeof Admin = Admin;
-	private readonly passwordService = new PasswordService();
 	private readonly tokenService = new TokenService();
+	private readonly passwordService = new PasswordService();
 
-	public async authenticate(email: string, password: string) {
+	public async authenticate(
+		email: string,
+		password: string
+	): Promise<AuthServerResponse | AuthErrorResponse> {
 		try {
 			const admin = await this.adminModel.findOne({ email }).select("+password").lean();
 
 			if (!admin) {
-				logger.warn(`Email is not found: ${email}`);
-				return null;
+				logger.warn(`Email not found: ${email}`);
+				return { success: false, message: "Invalid email or password" };
 			}
 
 			const isCorrectPassword = await this.passwordService.verify(admin.password, password);
 
 			if (!isCorrectPassword) {
 				logger.warn(`Password mismatch for email: ${email}`);
-				return null;
+				return { success: false, message: "Invalid email or password" };
 			}
 
 			const payload = {
@@ -32,14 +48,20 @@ export class AuthService {
 			const { accessToken, refreshToken } = this.tokenService.getTokens(payload);
 
 			if (!accessToken || !refreshToken) {
-				return null;
+				logger.warn("Failed to generate authentication tokens");
+				return { success: false, message: "Failed to generate authentication tokens" };
 			}
 
-			if (accessToken && refreshToken) {
-				await this.adminModel.findByIdAndUpdate(admin._id, { refreshToken });
-			}
+			await this.adminModel.findByIdAndUpdate(admin._id, { refreshToken });
+			const response = {
+				accessToken,
+				refreshToken,
+				success: true,
+				admin: payload,
+				message: "Authentic Admin"
+			};
 
-			return { success: true, accessToken, refreshToken, admin: payload };
+			return response;
 		} catch (error) {
 			logger.error(`Auth service crashed: ${(error as Error).message}`);
 			throw error;

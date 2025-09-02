@@ -2,28 +2,30 @@ import { Admin } from "$models/admin";
 import { logger } from "$lib/winston";
 import { PasswordService, TokenService } from "$services/security";
 
-interface AuthServerResponse {
-	success: true;
+interface AuthBaseResponse {
+	success: boolean;
 	message: string;
+}
+
+interface AuthSuccessResponse extends AuthBaseResponse {
+	success: true;
 	accessToken: string;
 	refreshToken: string;
 	admin: { _id: string; name: string; email: string };
 }
 
-interface AuthErrorResponse {
+interface AuthErrorResponse extends AuthBaseResponse {
 	success: false;
-	message: string;
 }
+
+export type AuthResponse = AuthSuccessResponse | AuthErrorResponse;
 
 export class AuthService {
 	private readonly adminModel: typeof Admin = Admin;
 	private readonly tokenService = new TokenService();
 	private readonly passwordService = new PasswordService();
 
-	public async authenticate(
-		email: string,
-		password: string
-	): Promise<AuthServerResponse | AuthErrorResponse> {
+	public async authenticate(email: string, password: string): Promise<AuthResponse> {
 		try {
 			const admin = await this.adminModel.findOne({ email }).select("+password").lean();
 
@@ -53,15 +55,14 @@ export class AuthService {
 			}
 
 			await this.adminModel.findByIdAndUpdate(admin._id, { refreshToken });
-			const response = {
+
+			return {
+				success: true,
+				message: "Authentic Admin",
 				accessToken,
 				refreshToken,
-				success: true,
-				admin: payload,
-				message: "Authentic Admin"
+				admin: payload
 			};
-
-			return response;
 		} catch (error) {
 			logger.error(`Auth service crashed: ${(error as Error).message}`);
 			throw error;

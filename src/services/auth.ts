@@ -1,5 +1,6 @@
 import { Admin } from "$models/admin";
 import { logger } from "$lib/winston";
+import type { ObjectId } from "mongoose";
 import { PasswordService, TokenService } from "$services/security";
 
 interface AuthBaseResponse {
@@ -63,6 +64,33 @@ export class AuthService {
 				refreshToken,
 				admin: payload
 			};
+		} catch (error) {
+			logger.error(`Auth service crashed: ${(error as Error).message}`);
+			throw error;
+		}
+	}
+
+	public async revokeAccess(_id: ObjectId): Promise<AuthBaseResponse> {
+		try {
+			const currentAdmin = await this.adminModel.findById(_id).lean();
+
+			if (!currentAdmin) {
+				logger.warn(`Admin not found: ${_id}`);
+				return { success: false, message: "Admin not found" };
+			}
+
+			const updatedAdmin = await this.adminModel.findByIdAndUpdate(
+				_id,
+				{ $unset: { refreshToken: "" } },
+				{ new: true }
+			);
+
+			if (!updatedAdmin) {
+				logger.warn("Failed to remove refreshToken");
+				return { success: false, message: "Failed to remove refreshToken" };
+			}
+
+			return { success: true, message: "Admin is logout" };
 		} catch (error) {
 			logger.error(`Auth service crashed: ${(error as Error).message}`);
 			throw error;

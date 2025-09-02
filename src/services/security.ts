@@ -48,11 +48,9 @@ export class TokenService {
 	private readonly accessTokenOptions: SignOptions = { expiresIn: "1d", algorithm: "HS256" };
 	private readonly refreshTokenOptions: SignOptions = { expiresIn: "7d", algorithm: "HS256" };
 
-	constructor(private readonly payload: TokenPayload) {}
-
-	public getTokens(): TokenResponse {
-		const accessToken = this.generateAccessToken(this.payload._id);
-		const refreshToken = this.generateRefreshToken(this.payload);
+	public getTokens(payload: TokenPayload): TokenResponse {
+		const accessToken = this.generateAccessToken(payload._id);
+		const refreshToken = this.generateRefreshToken(payload);
 
 		if (!accessToken || !refreshToken) {
 			logger.warn("Failed to generate tokens");

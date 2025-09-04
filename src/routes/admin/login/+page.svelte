@@ -1,5 +1,12 @@
+<script lang="ts">
+	import { superForm } from "sveltekit-superforms";
+
+	let { data } = $props();
+	const { form, errors, enhance } = superForm(data.form);
+</script>
+
 <main class="grid h-screen w-screen place-items-center">
-	<form class="w-full max-w-2xl space-y-4 p-7">
+	<form class="w-full max-w-2xl space-y-4 p-7" method="POST" action="?/login" use:enhance>
 		<h1 class="mb-8 text-center text-xl sm:text-3xl">Sign in to continue</h1>
 		<section class="space-y-1">
 			<div>
@@ -12,9 +19,12 @@
 					autocomplete="off"
 					placeholder="Enter you email address"
 					class="w-full rounded-sm"
+					bind:value={$form.email}
 				/>
 			</div>
-			<small class="font-semibold text-red-500">Invalid email address</small>
+			{#if $errors.email}
+				<small class="font-semibold text-red-500">{$errors.email}</small>
+			{/if}
 		</section>
 		<section class="space-y-1">
 			<div>
@@ -27,9 +37,12 @@
 					autocomplete="off"
 					placeholder="Enter you password"
 					class="w-full rounded-sm"
+					bind:value={$form.password}
 				/>
 			</div>
-			<small class="font-semibold text-red-500">Password must be 8 characters long</small>
+			{#if $errors.password}
+				<small class="font-semibold text-red-500">{$errors.password}</small>
+			{/if}
 		</section>
 		<div>
 			<button

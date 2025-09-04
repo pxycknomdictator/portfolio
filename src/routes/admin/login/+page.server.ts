@@ -1,6 +1,5 @@
 import type { Actions } from "./$types";
 import { redirect } from "@sveltejs/kit";
-import { database } from "$lib/mongoose";
 import * as env from "$env/static/private";
 import { zodAdminSchema } from "$utils/zod";
 import { AuthService } from "$src/services/auth";
@@ -25,8 +24,6 @@ export const load = async ({ cookies }) => {
 
 export const actions: Actions = {
 	async login({ request, cookies }) {
-		await database();
-
 		const form = await superValidate(
 			request,
 			zod4(zodAdminSchema as unknown as ZodValidationSchema)

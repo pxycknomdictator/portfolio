@@ -3,21 +3,10 @@ import { redirect } from "@sveltejs/kit";
 import * as env from "$env/static/private";
 import { zodAdminSchema } from "$utils/zod";
 import { AuthService } from "$src/services/auth";
-import { TokenService } from "$src/services/security";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4, type ZodValidationSchema } from "sveltekit-superforms/adapters";
 
-export const load = async ({ cookies }) => {
-	const token = cookies.get("accessToken");
-	const tokenService = new TokenService();
-
-	if (token) {
-		const response = tokenService.verifyAccessToken(token);
-		if (response) {
-			throw redirect(303, "/admin/dashboard");
-		}
-	}
-
+export const load = async () => {
 	const form = await superValidate(zod4(zodAdminSchema as unknown as ZodValidationSchema));
 	return { form };
 };
@@ -50,6 +39,6 @@ export const actions: Actions = {
 			sameSite: env.NODE_ENV === "production" ? "strict" : "lax"
 		});
 
-		return message(form, "Form Submitted Successfully");
+		throw redirect(303, "/admin/dashboard");
 	}
 };

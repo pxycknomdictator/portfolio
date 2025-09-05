@@ -8,3 +8,8 @@ services:
             MONGO_INITDB_DATABASE: portfolio
             MONGO_INITDB_ROOT_USERNAME: cat
             MONGO_INITDB_ROOT_PASSWORD: meow
+        volumes:
+            - portfolio:/data/db
+
+volumes:
+    portfolio:

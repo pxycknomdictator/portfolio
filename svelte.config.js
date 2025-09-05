@@ -13,7 +13,7 @@ const config = {
 			$utils: "./src/utils/",
 			$models: "./src/models/",
 			$services: "./src/services/",
-			$components: "./src/components"
+			$components: "./src/components/"
 		}
 	}
 };

@@ -42,6 +42,6 @@ export const actions: Actions = {
 			sameSite: env.NODE_ENV === "production" ? "strict" : "lax"
 		});
 
-		throw redirect(303, "/admin/dashboard");
+		throw redirect(303, "/admin/dashboard?login=success");
 	}
 };

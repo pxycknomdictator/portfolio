@@ -6,7 +6,10 @@ import { AuthService } from "$src/services/auth";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4, type ZodValidationSchema } from "sveltekit-superforms/adapters";
 
-export const load = async () => {
+export const load = async ({ cookies }) => {
+	const token = cookies.get("accessToken");
+	if (token) throw redirect(303, "/admin/dashboard");
+
 	const form = await superValidate(zod4(zodAdminSchema as unknown as ZodValidationSchema));
 	return { form };
 };
@@ -19,7 +22,7 @@ export const actions: Actions = {
 		);
 
 		if (!form.valid) {
-			return message(form, "Invalid Entries", { status: 400 });
+			return message(form, "Invalid Credentials Form Entries");
 		}
 
 		const { email, password } = form.data as { email: string; password: string };
@@ -28,7 +31,7 @@ export const actions: Actions = {
 		const response = await authService.authenticate(email, password);
 
 		if (!response.success) {
-			return message(form, response.message, { status: 404 });
+			return message(form, response.message);
 		}
 
 		cookies.set("accessToken", response.accessToken, {

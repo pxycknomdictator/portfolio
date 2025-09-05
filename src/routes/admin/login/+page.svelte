@@ -1,10 +1,15 @@
 <script lang="ts">
+	import { Toaster, toast } from "svelte-sonner";
 	import { superForm } from "sveltekit-superforms";
 	import OpenEye from "$components/svg/OpenEye.svelte";
 	import CloseEye from "$components/svg/CloseEye.svelte";
 
 	let { data } = $props();
-	const { form, errors, enhance } = superForm(data.form);
+	const { form, errors, enhance } = superForm(data.form, {
+		onUpdate({ form, result }) {
+			if (result.type === "failure") toast.error(form.message, { duration: 2000 });
+		}
+	});
 
 	let showPassword = $state<boolean>(false);
 
@@ -12,6 +17,8 @@
 		showPassword = !showPassword;
 	}
 </script>
+
+<Toaster position="top-right" richColors />
 
 <main class="grid h-screen w-screen place-items-center">
 	<form class="w-full max-w-2xl space-y-4 p-7" method="POST" action="?/login" use:enhance>

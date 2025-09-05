@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { superForm } from "sveltekit-superforms";
-	import OpenEye from "$components/OpenEye.svelte";
-	import CloseEye from "$components/CloseEye.svelte";
+	import OpenEye from "$components/svg/OpenEye.svelte";
+	import CloseEye from "$components/svg/CloseEye.svelte";
 
 	let { data } = $props();
 	const { form, errors, enhance } = superForm(data.form);

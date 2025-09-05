@@ -1,8 +1,16 @@
 <script lang="ts">
 	import { superForm } from "sveltekit-superforms";
+	import OpenEye from "$components/OpenEye.svelte";
+	import CloseEye from "$components/CloseEye.svelte";
 
 	let { data } = $props();
 	const { form, errors, enhance } = superForm(data.form);
+
+	let showPassword = $state<boolean>(false);
+
+	function togglePasswordEye() {
+		showPassword = !showPassword;
+	}
 </script>
 
 <main class="grid h-screen w-screen place-items-center">
@@ -17,7 +25,7 @@
 					type="email"
 					name="email"
 					autocomplete="off"
-					placeholder="Enter you email address"
+					placeholder="Enter your email address"
 					class="w-full rounded-sm"
 					bind:value={$form.email}
 				/>
@@ -29,16 +37,29 @@
 		<section class="space-y-1">
 			<div>
 				<label class="mb-1 block" for="password">Password:</label>
-				<input
-					required
-					id="password"
-					type="password"
-					name="password"
-					autocomplete="off"
-					placeholder="Enter you password"
-					class="w-full rounded-sm"
-					bind:value={$form.password}
-				/>
+				<div class="relative">
+					<input
+						required
+						id="password"
+						type={!showPassword ? "password" : "text"}
+						name="password"
+						autocomplete="off"
+						placeholder="Enter your password"
+						class="w-full rounded-sm pr-10"
+						bind:value={$form.password}
+					/>
+					<button
+						onclick={togglePasswordEye}
+						type="button"
+						class="absolute inset-y-0 right-2 flex cursor-pointer items-center"
+					>
+						{#if !showPassword}
+							<OpenEye />
+						{:else}
+							<CloseEye />
+						{/if}
+					</button>
+				</div>
 			</div>
 			{#if $errors.password}
 				<small class="font-semibold text-red-500">{$errors.password}</small>

@@ -77,6 +77,10 @@
 				class="w-full cursor-pointer rounded-sm bg-blue-500 py-2 font-semibold text-white transition-colors hover:bg-blue-600"
 				type="submit">Submit</button
 			>
+			<span class="mt-2.5 block">
+				Forgotten your password?
+				<a class="text-blue-500 hover:underline" href="/admin/recovery">Reset</a>
+			</span>
 		</div>
 	</form>
 </main>

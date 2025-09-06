@@ -2,7 +2,7 @@ import mongoose, { Schema, model } from "mongoose";
 import type { Document, Model, ObjectId } from "mongoose";
 
 interface ProjectInterface extends Document {
-	userId: ObjectId;
+	adminId: ObjectId;
 	title: string;
 	description: string;
 	tags: Array<string>;
@@ -15,10 +15,10 @@ interface ProjectInterface extends Document {
 
 const projectSchema = new Schema<ProjectInterface>(
 	{
-		userId: {
+		adminId: {
 			type: Schema.Types.ObjectId,
 			ref: "Admin",
-			required: [true, "userId is required"]
+			required: [true, "adminId is required"]
 		},
 		title: {
 			type: String,

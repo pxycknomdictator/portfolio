@@ -2,7 +2,7 @@ import mongoose, { Schema, model } from "mongoose";
 import type { Document, Model, ObjectId } from "mongoose";
 
 interface TechnologyInterface extends Document {
-	userId: ObjectId;
+	adminId: ObjectId;
 	category: "Frontend" | "Backend" | "DevOps" | "Tools";
 	technology: string;
 	image?: string;
@@ -12,10 +12,10 @@ interface TechnologyInterface extends Document {
 
 const technologySchema = new Schema<TechnologyInterface>(
 	{
-		userId: {
+		adminId: {
 			type: Schema.Types.ObjectId,
 			ref: "Admin",
-			required: [true, "userId is required"]
+			required: [true, "adminId is required"]
 		},
 		category: {
 			type: String,

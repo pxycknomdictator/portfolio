@@ -96,4 +96,20 @@ export class AuthService {
 			throw error;
 		}
 	}
+
+	public async findEmail(email: string): Promise<AuthBaseResponse> {
+		try {
+			const admin = await this.adminModel.findOne({ email }).lean();
+
+			if (!admin) {
+				logger.warn(`Email not found: ${email}`);
+				return { success: false, message: "Credentials Error" };
+			}
+
+			return { success: true, message: `${email} is authentic account` };
+		} catch (error) {
+			logger.error(`Auth service crashed: ${(error as Error).message}`);
+			throw error;
+		}
+	}
 }
